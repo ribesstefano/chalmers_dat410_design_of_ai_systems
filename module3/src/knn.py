@@ -34,7 +34,7 @@ class KNeighborsClassifier(object):
         Predict the classes of the input array of queries X.
 
         :param      X:    The queries to classify
-        :type       X:    numpy array, shape: (n_queries, n_features)
+        :type       X:    Numpy array, shape: (n_queries, n_features)
 
         :returns:   The numpy array containing the classified labels
         :rtype:     Numpy array, shape: (n_queries)
@@ -48,7 +48,20 @@ class KNeighborsClassifier(object):
         return labels
 
     def score(self, X, y, sample_weight=None):
-        pass
+        """
+        Return mean accuracy of the test data X against their labels y.
+
+        :param      X:              The test data
+        :type       X:              Numpy array, shape: (n_queries, n_features)
+        :param      y:              The true labels
+        :type       y:              Numpy array, shape: (n_queries)
+        :param      sample_weight:  The sample weight (unused for now)
+        :type       sample_weight:  Numpy array, shape:
+
+        :returns:   The mean accuracy of the classification
+        :rtype:     Double value
+        """
+        return np.count_nonzero(y == self.predict(X)) / y.size
 
 def main():
     n_neighbors = 4
@@ -59,7 +72,11 @@ def main():
     x_train = np.random.randn(n_samples, n_features)
     y = np.random.randint(n_features, size=n_samples)
     knn.fit(x_train, y)
-    print(knn.predict(np.random.randn(n_queries, n_features)))
+
+    x_test = np.random.randn(n_queries, n_features)
+    labels = knn.predict(x_test)
+    print(labels)
+    print(knn.score(x_test, labels))
 
 if __name__ == '__main__':
     main()
