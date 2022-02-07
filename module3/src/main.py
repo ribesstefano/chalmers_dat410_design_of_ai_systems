@@ -42,7 +42,7 @@ if __name__ == '__main__':
     y_train = np.concatenate((y_train_Beijing,y_train_Shenyang))
     y_test = np.concatenate((y_test_Beijing,y_test_Shenyang))
 
-    print('INFO. Identifying the best 'n_neighbors' parameter.')
+    print('INFO. Identifying the best "n_neighbors" parameter.')
     score_arr = []
     for n in range(3, 50, 2):
         model = KNeighborsClassifier(n_neighbors=n)
