@@ -2,8 +2,7 @@ import pandas as pd
 import knn
 from sklearn.model_selection import train_test_split
 import numpy as np
-from sklearn.metrics import mean_squared_error
-from math import sqrt
+import matplotlib.pyplot as plt
 
 
 def read_csv(path):
@@ -18,6 +17,7 @@ def divide_in_sets(df):
     return x, y
 
 
+# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     df_Beijing = read_csv('data/Beijing_labeled.csv')
     df_Chengdu = read_csv('data/Chengdu_labeled.csv')
@@ -47,17 +47,18 @@ if __name__ == '__main__':
     y_train = np.concatenate((y_train_Beijing,y_train_Shenyang))
     y_test = np.concatenate((y_test_Beijing,y_test_Shenyang))
 
-    rmse_arr = []
 
-    for n in range(3, 30):
+    score_arr = []
+
+    for n in range(3, 50, 2):
 
         model = knn.KNeighborsClassifier(n_neighbors=n)
 
         model.fit(x_train, y_train)
 
         test_preds = model.predict(x_test)
-        mse = mean_squared_error(y_test, test_preds)
-        rmse = sqrt(mse)
+
+
 
         #evaluation on Guangzhou and Shanghai
 
@@ -65,5 +66,14 @@ if __name__ == '__main__':
 
         y_eval = np.concatenate((y_Guangzhou,y_Shanghai))
 
-        score = model.score(x_eval, y_eval)
-        print(n, score)
+        res = model.score(x_eval, y_eval)
+
+        print(n, res)
+
+        score_arr.append(res)
+
+    plt.plot(score_arr)
+    plt.xlabel('N Neighbors')
+    plt.ylabel('Score')
+    plt.savefig('Score.png')
+    plt.show()
