@@ -39,3 +39,8 @@ In plain words, for a given source-language sentence F, we want to find the Engl
 Exemplify how this algorithm works by showing the result of applying your translation system to a short sentence from the source language.
 
 As mentioned, it is expected that you will need to introduce a number of assumptions to make this at all feasible. Please explain all simplifying assumptions that you have made, and the impact you think that they will have on the quality of translations. But why is it an algorithmically difficult problem to find the English sentence that has the highest probability in our model?
+
+
+## TODOs
+
+* `language_model.py`: What's the count of bigrams when the sentence has an odd number of words?
