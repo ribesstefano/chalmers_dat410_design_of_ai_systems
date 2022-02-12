@@ -3,21 +3,30 @@ import re
 
 import random
 import itertools
+from math import log
 
 def chunks(lst, n):
     """Yield successive n-sized chunks from lst."""
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
 
-def language_model(sentence, word_counter, bigram_counter):
-    prob = 1.
+def language_model(sentence, word_counter, bigram_counter, use_log=True):
+    prob = 0 if use_log else 1.
     for bigram in chunks(sentence, 2):
+        # TODO: To avoid vanishing probabilities, we should consider maximizing
+        # the sum of the log-probabilities.
         # TODO: Handle case when sentence has odd number of words.
+        # TODO: How do we handle the NULL words?
+        # TODO: How do we handle EOS?
         if len(bigram) == 2:
             # NOTE: If the word is not present in the dictionary/counters, raise
             # exception.
             try:
-                prob *= bigram_counter[tuple(bigram)] / word_counter[bigram[0]]
+                p = bigram_counter[tuple(bigram)] / word_counter[bigram[0]]
+                if use_log:
+                    prob += log(p + 1e-32)
+                else:
+                    prob *= p
             except Exception as e:
                 print(f'ERROR. Word "{bigram[0]}" not present in the dictionary.')
                 raise e
