@@ -12,34 +12,22 @@ def chunks(lst, n):
 
 def language_model(sentence, word_counter, bigram_counter, use_log=True):
     prob = 0 if use_log else 1.
-    for bigram in chunks(sentence, 2):
+    for bigram in zip(sentence, sentence[1:]):
         # TODO: To avoid vanishing probabilities, we should consider maximizing
         # the sum of the log-probabilities.
-        # TODO: Handle case when sentence has odd number of words.
-        # TODO: How do we handle the NULL words?
-        # TODO: How do we handle EOS?
-        if len(bigram) == 2:
-            # NOTE: If the word is not present in the dictionary/counters, raise
-            # exception.
-            try:
-                p = bigram_counter[tuple(bigram)] / word_counter[bigram[0]]
-                if use_log:
-                    prob += log(p + 1e-32)
-                else:
-                    prob *= p
-            except Exception as e:
-                print(f'ERROR. Word "{bigram[0]}" not present in the dictionary.')
-                raise e
+        # NOTE: If the word is not present in the dictionary, we assume a very
+        # small probability of it appearing the translation.
+        if word_counter[bigram[0]] == 0:
+            if use_log:
+                prob += 1e-32
+            else:
+                prob *= 1e-15
         else:
-            try:
-                p = 1 / word_counter[bigram[0]]
-                if use_log:
-                    prob += log(p + 1e-32)
-                else:
-                    prob *= p
-            except Exception as e:
-                print(f'ERROR. Word "{bigram[0]}" not present in the dictionary.')
-                raise e
+            p = bigram_counter[bigram] / word_counter[bigram[0]]
+            if use_log:
+                prob += -log(p + 1e-32)
+            else:
+                prob *= p
     return prob
 
 def main():

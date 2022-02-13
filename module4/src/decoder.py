@@ -42,7 +42,7 @@ def decoder(target_dictionary, word_counter, bigram_counter, beam_size=3, max_se
                         sentence = ''.join([w + ' ' for w in word_list])[:-1]
                     # Get probabilities from the models.
                     p_e = language_model(word_list, word_counter, bigram_counter)
-                    p_fe = log(translation_model())
+                    p_fe = -log(translation_model())
                     # Update the database of candidate sentences and their prob.
                     prob[sentence] = (p_e + p_fe) / (get_len(word_list)**alpha)
         # Sort the sentences according to the highest probabilities.
@@ -58,10 +58,6 @@ def decoder(target_dictionary, word_counter, bigram_counter, beam_size=3, max_se
     return candidate_sentences
 
 def main():
-    # TODO: We should normalize the candidates according to their length.
-    data_dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'data'))
-    en_path = os.path.join(data_dir, 'europarl-v7.fr-en.en')
-    fr_path = os.path.join(data_dir, 'europarl-v7.fr-en.fr')
 
     sample_text = '''
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse eget facilisis elit. Interdum et malesuada fames ac ante ipsum primis in faucibus. Duis in ante egestas, elementum tortor at, dignissim odio. Phasellus sed volutpat neque. Quisque et efficitur tellus. Nulla at venenatis magna. Nunc porttitor at metus luctus dapibus. Maecenas volutpat mauris sit amet metus semper, a iaculis elit consequat. Quisque vulputate sagittis sem, a gravida orci porttitor vel. Nam justo eros, tincidunt id aliquet a, vulputate ac tortor. Vestibulum lobortis enim a varius rutrum. Phasellus aliquet tortor eros, a scelerisque ipsum bibendum at. Cras eget fermentum urna, sed dapibus arcu. Ut id nisl at velit ornare commodo. Vestibulum pellentesque, purus vel suscipit ornare, risus justo eleifend elit, nec dignissim eros metus vel elit.
@@ -94,12 +90,17 @@ Phasellus vestibulum elit est, a congue mi varius vel. Suspendisse ornare nibh n
         
     sample_text = clean_text(sample_text)
     
-    # with codecs.open(en_path, 'r', 'utf-8') as f:
-    #     en_text = f.read().replace('\n', '')
-    # with codecs.open(fr_path, 'r', 'utf-8') as f:
-    #     fr_text = f.read().replace('\n', '')
-    # en_text = clean_text(en_text)
-    # fr_text = clean_text(fr_text)
+    # TODO: We should normalize the candidates according to their length.
+    data_dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'data'))
+    en_path = os.path.join(data_dir, 'europarl-v7.sv-en.lc.en')
+    sv_path = os.path.join(data_dir, 'europarl-v7.sv-en.lc.sv')
+
+    with codecs.open(en_path, 'r', 'utf-8') as f:
+        en_text = f.read().replace('\n', '')
+    with codecs.open(sv_path, 'r', 'utf-8') as f:
+        sv_text = f.read().replace('\n', '')
+    en_text = clean_text(en_text)
+    sv_text = clean_text(sv_text)
 
     word_counter = Counter(sample_text.split(' '))
     # print(word_counter.most_common(10))
