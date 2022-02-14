@@ -63,7 +63,11 @@ def is_in_keys(prtabel, ew):
 
     return f_words
 
-def most_probable_words(prtable, ew, f_words):
+def most_probable_words(prtable, ew, f_words, n):
+    '''-prtabel: table of probabilities
+     - ew: target language
+     - f_words: foreign language vocabulary
+     -n : top n most probable words'''
     df = pd.DataFrame(columns=f_words)
     prob = []
     for f_word in f_words:
@@ -71,7 +75,7 @@ def most_probable_words(prtable, ew, f_words):
     a_series = pd.Series(prob, index=df.columns)
     df = df.append(a_series, ignore_index=True)
     df = df.sort_values(by=0, ascending=False, axis=1)
-    return df.iloc[:,0:9]
+    return df.iloc[:,0:n]
 
 def get_bigram_prob(prtabel, f_bigram, e_bigram):
     '''returns the probability that a bigram is correctly translated in a foreign bigram.
@@ -93,7 +97,6 @@ prob = get_bigram_prob(prtable, ['nature','cours'], ['nature', 'issues'])
 
 f_words = is_in_keys(prtable, 'nature')
 
-df = most_probable_words(prtable, 'european', f_words)
+df = most_probable_words(prtable, 'european', f_words, 3)
 
 print(df)
-
