@@ -11,6 +11,7 @@ def clean_text(text):
     return text.split(' ')
 
 def count_words(word_list):
+    ''' counter '''
     c = Counter(word_list)
     print(c.most_common(10))
     return c
