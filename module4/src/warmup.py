@@ -17,8 +17,12 @@ def count_words(word_list, verbose=0):
         print(c.most_common(10))
     return c
 
-def get_counter(filename):
+def get_word_counter(filename):
     return count_words(clean_text(open_file(filename)))
+
+def get_bigram_counter(filename):
+    txt = clean_text(open_file(filename))
+    return Counter(zip(txt, txt[1:]))
 
 if __name__ == '__main__':
     text = open_file("data/dat410_europarl/europarl-v7.de-en.lc.de")
