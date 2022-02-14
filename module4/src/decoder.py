@@ -62,12 +62,48 @@ def decoder(src_sentence, target_word_cnt, src_word_cnt, target_bigram_cnt,
         # Create a list of sentences, i.e. list of words, for the updated
         # candidate translated senteces.
         candidate_sentences = [[w for w in s.split(' ')] for s in best_sentences]
+    # max_cnt = 0
+    # all_stopped = False
+    # while max_cnt < 15 and not all_stopped:
+    #     all_stopped = True
+    #     p_fe = [0] * beam_size
+    #     prob = {}
+    #     for j in range(beam_size):
+    #         # For each candidate sentence, calculate its translation probability
+    #         # for the translated words so far.
+    #         for k, target_word in enumerate(candidate_sentences[j]):
+    #             idx = min(k, len(src_sentence)-1)
+    #             p_fe[j] += log(get_prob(prob_table, src_sentence[idx], target_word))
+    #         # Now loop over all possible target words and calculate the new prob
+    #         for target_word in target_dict:
+    #             if i == 0:
+    #                 # NOTE: candidate_sentences is still empty
+    #                 word_list = [target_word]
+    #                 sentence = target_word
+    #             else:
+    #                 word_list = candidate_sentences[j] + [target_word]
+    #                 sentence = ''.join([w + ' ' for w in word_list])[:-1]
+    #             # Get probabilities from the models.
+    #             p_e = language_model(word_list, target_word_cnt, target_bigram_cnt)
+    #             p_fe_curr = p_fe[j] + log(get_prob(prob_table, src_word, target_word))
+    #             # Update the database of candidate sentences and their prob.
+    #             prob[sentence] = (p_e + p_fe_curr) / (get_len(word_list)**alpha)
+    #     # Sort the sentences according to the highest probabilities.
+    #     best_sentences = dict(sorted(prob.items(), key=lambda item: item[1], reverse=True))
+    #     best_sentences = list(best_sentences.keys())[:beam_size]
+    #     # Create a list of sentences, i.e. list of words, for the updated
+    #     # candidate translated senteces.
+    #     candidate_sentences = [[w for w in s.split(' ')] for s in best_sentences]
+    #     for s in candidate_sentences:
+    #         if s[-1] != 'NULL':
+    #             all_stopped = False
+    #     max_cnt += 1
     return candidate_sentences
 
 def main():
     lang = 'sv'
-    lang = 'fr'
     lang = 'de'
+    lang = 'fr'
     src_sentence = {}
     src_sentence['sv'] = 'Jag vill säga någonting'.lower()
     src_sentence['fr'] = 'je veux dire quelque chose'.lower()
