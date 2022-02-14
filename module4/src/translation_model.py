@@ -1,6 +1,5 @@
 from collections import defaultdict as ddict
 import numpy as np
-import matplotlib as mpl
 
 def train(eng,fr,prtable,debug=False):
     ec_num = ddict(lambda:1e-6)
@@ -37,15 +36,40 @@ def train(eng,fr,prtable,debug=False):
     return prtable
 
 def readfile(filename):
+    '''reads the file'''
     sentList=[]
     with open(filename,'r') as f:
         for aline in f:
             sentList.append(aline.strip())
     return sentList
 
+def get_prob(prtabel, fw, ew):
+    '''given two words returns the probability that the foreign word it's the translation of the english word'''
+    key = (fw, ew)
+    if key in prtabel.keys():
+        return prtabel.get(key)
+    else:
+        return 0.00001
+
+
+
+def get_bigram_prob(prtabel, f_bigram, e_bigram):
+    '''returns the probability that a bigram is correctly translated in a foreign bigram.
+    Inputs:
+    -probability table
+    -foreign bigram
+    -english bigram'''
+
+    return get_prob(prtabel, f_bigram[0], e_bigram[0])*get_prob(prtabel, f_bigram[1], e_bigram[1])
+
 trainlist_eng = readfile('test.eng')
 trainlist_fra = readfile('test.fra')
 prtable = ddict(lambda: 1e-6)
 prtable = train(trainlist_eng,trainlist_fra,prtable)
 
-print(prtable)
+
+prob = get_bigram_prob(prtable, ['nature','cours'], ['nature', 'issues'])
+
+print(prob)
+
+# print(prtable)
