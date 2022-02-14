@@ -1,5 +1,7 @@
 from collections import defaultdict as ddict
 import numpy as np
+import matplotlib as mpl
+import pandas as pd
 
 def train(eng,fr,prtable,debug=False):
     ec_num = ddict(lambda:1e-6)
@@ -52,6 +54,24 @@ def get_prob(prtabel, fw, ew):
         return 0.00001
 
 
+def is_in_keys(prtabel, ew):
+    keys = prtabel.keys()
+    f_words = []
+    for key in keys:
+        if ew in key:
+            f_words.append(key[0])
+
+    return f_words
+
+def most_probable_words(prtable, ew, f_words):
+    df = pd.DataFrame(columns=f_words)
+    prob = []
+    for f_word in f_words:
+        prob.append(get_prob(prtable, f_word, ew))
+    a_series = pd.Series(prob, index=df.columns)
+    df = df.append(a_series, ignore_index=True)
+    df = df.sort_values(by=0, ascending=False, axis=1)
+    return df.iloc[:,0:9]
 
 def get_bigram_prob(prtabel, f_bigram, e_bigram):
     '''returns the probability that a bigram is correctly translated in a foreign bigram.
@@ -68,8 +88,12 @@ prtable = ddict(lambda: 1e-6)
 prtable = train(trainlist_eng,trainlist_fra,prtable)
 
 
+
 prob = get_bigram_prob(prtable, ['nature','cours'], ['nature', 'issues'])
 
-print(prob)
+f_words = is_in_keys(prtable, 'nature')
 
-# print(prtable)
+df = most_probable_words(prtable, 'european', f_words)
+
+print(df)
+
