@@ -25,7 +25,7 @@ def language_model(sentence, word_counter, bigram_counter, use_log=True):
         else:
             p = bigram_counter[bigram] / word_counter[bigram[0]]
             if use_log:
-                prob += -log(p + 1e-32)
+                prob += log(p + 1e-32)
             else:
                 prob *= p
     return prob
