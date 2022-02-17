@@ -12,9 +12,50 @@ class RuleBasedClassifier(object):
         self.abnormal_cell_texture_threshold = 0.
         self.abnormal_cell_similarity_threshold = 0.
 
+    def get_mean(self, cell, feature):
+        return cell[feature + '_0']
+
+    def get_std(self, cell, feature):
+        return cell[feature + '_1']
+
+    def get_worst(self, cell, feature):
+        return cell[feature + '_2']
+
+    def fit(self, X, y):
+        self.trained = True
+
+        y.describe().transpose()
+        pos = X[y == 1]
+        neg = X[y == 0]
+
+        # print(pos['radius_std'].describe().transpose())
+        # print(neg['radius_std'].describe().transpose())
+
+        # print(f"radius_mean pos/neg: {pos['radius_mean'].min()} / {neg['radius_mean'].min()}")
+        # print(f"radius_std pos/neg: {pos['radius_std'].min()} / {neg['radius_std'].min()}")
+        # print(f"radius_worst pos/neg: {pos['radius_worst'].min()} / {neg['radius_worst'].min()}")
+        
+        print(pos['area_worst'].describe().transpose())
+        print(neg['area_worst'].describe().transpose())
+
+
+        # T = m / s
+        # rm * 0.1 > T * 0.1 = m / s 
+
+
+        self.abnormal_cell_size_threshold = pos['radius_std'].mean()
+        '''
+        If [cell size is abnormal]
+        or [cell shape is abnormal]
+        or [cell texture is abnormal]
+        or [cell similarity/homogeneity is abnormal]
+        '''
 
     def is_cell_size_abnormal(self, cell):
-        return False
+        if cell['radius_std'] > self.abnormal_cell_size_threshold:
+            return True
+        else:
+            return False
 
     def is_cell_shape_abnormal(self, cell):
         return False
@@ -24,23 +65,6 @@ class RuleBasedClassifier(object):
 
     def is_cell_similarity_abnormal(self, cell):
         return False
-
-    def fit(self, X, y):
-        self.trained = True
-
-        y.describe().transpose()
-        pos = X[y == 1]
-        neg = X[y == 0]
-
-        print(pos['radius_0'].describe().transpose())
-        print(neg['radius_0'].describe().transpose())
-
-        '''
-        If [cell size is abnormal]
-        or [cell shape is abnormal]
-        or [cell texture is abnormal]
-        or [cell similarity/homogeneity is abnormal]
-        '''
 
     def predict(self, X):
         if not self.trained:
