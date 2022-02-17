@@ -38,6 +38,23 @@ def clean_data(filename, train_perc, df_as_numpy=True):
     x_train = df_train.drop(['malignant'], axis=1)
     x_test = df_test.drop(['malignant'], axis=1)
 
+    # Rename columns from '_0' to mean, et cetera...
+    new_col_names = []
+    for col_name in x_train.keys():
+        if '_0' in col_name:
+            new_name = col_name[:-2] + '_mean'
+        elif '_1' in col_name:
+            new_name = col_name[:-2] + '_std'
+        elif '_2' in col_name:
+            new_name = col_name[:-2] + '_worst'
+        else:
+            new_name = col_name
+        new_col_names.append(new_name)
+
+    new_names = {o : n for o, n in zip(x_train.keys(), new_col_names)}
+    x_train = x_train.rename(new_names, axis='columns')
+    x_test = x_test.rename(new_names, axis='columns')
+
     y_train = df_train['malignant']
     y_test = df_test['malignant']
 
@@ -53,6 +70,7 @@ def main():
     data = clean_data(DATABASE, TRAIN_PERC, df_as_numpy=False)
     x_train, y_train, x_test, y_test = data
     print(x_train.describe().transpose())
+    print(y_train.describe().transpose())
 
 if __name__ == '__main__':
     main()
