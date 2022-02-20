@@ -18,13 +18,13 @@ def define_model(n, kernel):
 
 
 def train_model(x_train, y_train, scaled=True):
-    if (scaled):
+    if scaled:
         x_train = scaler.fit_transform(x_train)
     svc.fit(x_train, y_train)
 
 
 def get_scores(x_test, scaled=True):
-    if (scaled):
+    if scaled:
         x_test = scaler.transform(x_test)
     return svc.decision_function(x_test)
 
@@ -49,19 +49,19 @@ def get_max_auc(x_train, y_train, x_test, y_test):
                 fpr, tpr, threshold = compute_roc_curve(y_test, y_scores)
                 auc = compute_auc(y_test, y_scores)
                 print(f'C:{c}, Kernel:{kernel}, AUC:{auc}, Scaled:{scaled}')
-                dict = {'C': c, 'Kernel': kernel, 'AUC': auc, 'Scaled': scaled}
-                df_scores = df_scores.append(dict, ignore_index=True)
+                score_dict = {'C': c, 'Kernel': kernel, 'AUC': auc, 'Scaled': scaled}
+                df_scores = df_scores.append(score_dict, ignore_index=True)
 
                 ax.plot(fpr, tpr)
     plt.show()
 
-    df_scores=df_scores.sort_values(by=['AUC'], ascending=False)
-    print(df_scores.iloc[0])
+    df_scores = df_scores.sort_values(by=['AUC'], ascending=False)
+    return df_scores.iloc[0]
 
 
 def main():
     x_train, y_train, x_test, y_test = data_cleaner.clean_data('wdbc.pkl', 0.7)
-    get_max_auc(x_train, y_train, x_test, y_test)
+    max_auc = get_max_auc(x_train, y_train, x_test, y_test)
 
 
 if __name__ == '__main__':
