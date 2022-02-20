@@ -4,7 +4,10 @@ from sklearn import metrics
 import pandas as pd
 import pickle
 
-clf = RandomForestClassifier(n_estimators=10)
+clf = RandomForestClassifier()
+
+def define_model(n):
+    clf = RandomForestClassifier(n_estimators=n)
 
 def train_model(x_train, y_train):
 
@@ -29,6 +32,7 @@ def open_file(filename):
         return df
 
 def main():
+    define_model(10)
     x_train, y_train, x_test, y_test = data_cleaner.clean_data('wdbc.pkl', 0.7, df_as_numpy=False)
     train_model(x_train,y_train)
     y_pred = predict_model(x_test)
