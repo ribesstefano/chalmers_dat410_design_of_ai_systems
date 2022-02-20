@@ -26,11 +26,6 @@ def feature_importance(x_train):
     feature_imp = pd.Series(clf.feature_importances_, index=x_train.columns).sort_values(ascending=False)
     return feature_imp
 
-def open_file(filename):
-    with open(filename, 'rb') as f:
-        df = pickle.load(f)
-        return df
-
 def main():
     define_model(10)
     x_train, y_train, x_test, y_test = data_cleaner.clean_data('wdbc.pkl', 0.7, df_as_numpy=False)
