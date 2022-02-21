@@ -1,6 +1,7 @@
 from data_cleaner import clean_data
-
+import os
 import numpy as np
+# from matplotlib import pyplot as plt
 
 class RuleBasedClassifier(object):
     """Implements a rule-based classifier"""
@@ -35,15 +36,34 @@ class RuleBasedClassifier(object):
         # print(f"radius_std pos/neg: {pos['radius_std'].min()} / {neg['radius_std'].min()}")
         # print(f"radius_worst pos/neg: {pos['radius_worst'].min()} / {neg['radius_worst'].min()}")
         
-        print(pos['area_worst'].describe().transpose())
-        print(neg['area_worst'].describe().transpose())
-
+        # print(pos['area_worst'].describe().transpose())
+        # print(neg['area_worst'].describe().transpose())
+        # neg['area_worst'].plot()
+        
+        print(pos['compactness_worst'].describe().transpose())
+        print(neg['compactness_worst'].describe().transpose())
 
         # T = m / s
         # rm * 0.1 > T * 0.1 = m / s 
 
 
         self.abnormal_cell_size_threshold = pos['radius_std'].mean()
+        self.abnormal_cell_texture_threshold = pos['radius_std'].mean()
+
+        '''
+        radius
+        texture
+        perimeter
+        area
+        smoothness
+        compactness
+        concavity
+        concave points
+        symmetry
+        fractal dimension
+        '''
+
+
         '''
         If [cell size is abnormal]
         or [cell shape is abnormal]
@@ -69,10 +89,6 @@ class RuleBasedClassifier(object):
     def predict(self, X):
         if not self.trained:
             print('WARNING. The model has not been trained.')
-        '''
-        We reject all submissions for which the cell count deviates by more than
-        20% from the mean cell count across workers.
-        '''
         labels = np.zeros(X.shape[0])
         for i, (index, row) in enumerate(X.iterrows()):
             if self.is_cell_size_abnormal(row) or \
@@ -88,7 +104,9 @@ class RuleBasedClassifier(object):
         return np.count_nonzero(y == self.predict(X)) / y.size
 
 def main():
-    DATABASE = 'wdbc.pkl'
+    data_dir = os.path.join(os.path.dirname( __file__ ), '..', 'data')
+    data_dir = os.path.abspath(data_dir)
+    DATABASE = os.path.join(data_dir, 'wdbc.pkl')
     TRAIN_PERC = 0.8
 
     data = clean_data(DATABASE, TRAIN_PERC, df_as_numpy=False)
@@ -98,6 +116,8 @@ def main():
 
     model.fit(x_train, y_train)
     print(model.score(x_test, y_test))
+
+    # print(x_train.describe().transpose())
 
 if __name__ == '__main__':
     main()
