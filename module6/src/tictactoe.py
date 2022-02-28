@@ -21,9 +21,14 @@ class TicTacToeGame(object):
         assert 0 < self.bot_player_id <= num_players, f'ERROR. Bot ID {self.bot_player_id} higher than number of players ({self.num_players}).'
     
     def reset(self):
+        coords = [x for x in range(self.grid_size)]
+        self.action_space = list(itertools.product(coords, coords))
         self.board = np.zeros((self.grid_size, self.grid_size))
         self.player_turn = 1
         self.num_turns_passed = 0
+
+    def get_action_space(self):
+        return self.action_space
 
     def _check_victory(self):
         # Get the two diagonals
@@ -55,7 +60,7 @@ class TicTacToeGame(object):
         # in a non-winning cell, then the reward can still be high!!!
         reward = 0
         if done and self.bot_player_id == winning_player:
-            return self.grid_size ** 2 * self.grid_size
+            return self.grid_size ** 3
         # For the bot player, count the number of winning conditions which are
         # close to achieve. E.g. If a row has 2 out 3 cells belonging to the bot
         # player, then the reward would be +2.
@@ -71,6 +76,7 @@ class TicTacToeGame(object):
     def step(self, action, verbose=0):
         assert action in self.action_space, f'ERROR. Cell {action} outside of the board.'
         assert self.board[action] == 0, f'ERROR. Cell {action} already occupied.'
+        self.action_space.remove(action)
         self.num_turns_passed += 1
         if verbose:
             print(f'DEBUG. Player {self.player_turn} selecting cell {action}')
@@ -101,7 +107,7 @@ class TicTacToeGame(object):
 def main():
     grid_size = 4
     env = TicTacToeGame(grid_size)
-    env.reset()    
+    env.reset()
     coords = [x for x in range(grid_size)]
     # for a in [(0, 0), (1, 0), (0, 1), (1, 1), (0, 2)]:
     for a in list(itertools.product(coords, coords)):
