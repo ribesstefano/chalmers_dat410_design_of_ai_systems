@@ -1,3 +1,3 @@
-./data/*en*
-**/__pychache__.py
+data
+**/__pychache__
 **/__init__.py
