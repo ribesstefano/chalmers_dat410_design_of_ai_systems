@@ -27,7 +27,7 @@ def feature_importance(x_train):
     return feature_imp
 
 def main():
-    define_model(10)
+    define_model(100)
     x_train, y_train, x_test, y_test = data_cleaner.clean_data('wdbc.pkl', 0.7, df_as_numpy=False)
     train_model(x_train,y_train)
     y_pred = predict_model(x_test)

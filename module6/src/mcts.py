@@ -21,6 +21,7 @@ class MonteCarloTreeSearch(object):
         return self.get_legal_actions()
 
     def q(self):
+        #difference in number of win and losses
         wins = self.results[1]
         losses = self.results[2]
         return wins - losses
