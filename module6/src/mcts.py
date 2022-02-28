@@ -2,41 +2,44 @@ import numpy as np
 from collections import defaultdict
 from tictactoe import TicTacToeGame
 
-class MonteCarloTreeSearch(object):
+
+class MonteCarloTreeSearchNode:
     def __init__(self, state, parent=None, parent_action=None):
         self.state = state
         self.parent = parent
         self.parent_action = parent_action
         self.children = []
-        self.number_of_visits = 0
-        self.results = defaultdict(int)
-        self.results[1] = 0
-        self.results[2] = 0
-        self.untried_actions = None
-        self.untried_actions = self.remaining_actions()
+        self._number_of_visits = 0
+        self._results = defaultdict(int)
+        self._results[1] = 0
+        self._results[-1] = 0
+        self._untried_actions = None
+        self._untried_actions = self.untried_actions()
         return
 
-    def remaining_actions(self):
-        return self.get_legal_actions()
+    def untried_actions(self):
+        self._untried_actions = self.state.get_legal_actions()
+        return self._untried_actions
 
     def q(self):
-        #difference in number of win and losses
-        wins = self.results[1]
-        losses = self.results[2]
-        return wins - losses
+        wins = self._results[1]
+        loses = self._results[-1]
+        return wins - loses
 
     def n(self):
-        return self.number_of_visits
+        return self._number_of_visits
 
     def expand(self):
-        action = self.untried_actions
-        next_state = self.state.step(action)
-        child_node = MonteCarloTreeSearch(next_state, parent=self, parent_action=action)
+        action = self._untried_actions.pop()
+        next_state = self.state.move(action)
+        child_node = MonteCarloTreeSearchNode(
+            next_state, parent=self, parent_action=action)
+
         self.children.append(child_node)
         return child_node
 
     def is_terminal_node(self):
-        return self.is_game_over()
+        return self.state.is_game_over()
 
     def rollout(self):
         current_rollout_state = self.state
@@ -55,7 +58,7 @@ class MonteCarloTreeSearch(object):
             self.parent.backpropagate(result)
 
     def is_fully_expanded(self):
-        return len(self.untried_actions) == 0
+        return len(self._untried_actions) == 0
 
     def best_child(self, c_param=0.1):
 
@@ -87,32 +90,14 @@ class MonteCarloTreeSearch(object):
 
         return self.best_child(c_param=0.)
 
-    def get_legal_actions(self):
-        return self.state.board[self.state.board == 0]
-
-    def is_game_over(self):
-        legal_actions =  self.get_legal_actions()
-        legal_actions = list(legal_actions)
-        if bool(legal_actions):
-            return False
-        else:
-            return True
-
-    def game_result(self):
-        _, result = tictactoe._check_victory(self.state)
-        return result
-
-    def move(self, action):
-        self.state = tictactoe.step(action)
-        return self.state
-
 
 def main():
-    grid_size = 3
-    initial_state = TicTacToeGame(grid_size)
-    root = MonteCarloTreeSearch(initial_state)
-    best_move = root.best_action()
-
+    game = TicTacToeGame(3)
+    game.reset()
+    initial_state = game
+    root = MonteCarloTreeSearchNode(state=initial_state)
+    selected_node = root.best_action()
+    return
 
 if __name__ == '__main__':
     main()
