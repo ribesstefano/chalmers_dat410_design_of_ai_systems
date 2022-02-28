@@ -1,5 +1,12 @@
 # Natural Language Processing
 
+## Instructions
+
+In order to run the assignment, please run the `main` function in file `src/decoder.py`.
+The code has been written in Python 3 and should not depend on any library outside the standard libraries.
+
+## Assignment Text
+
 Repeat the lecture slides that describe word-based statistical machine translation. You may also read the following introduction to IBM models 1 and 2 (Links to an external site.), by Michael Collins. You will implement the algorithm described in Figure 4, but please note that the pseudocode is a bit confusing and includes some things you don't need. Here is a document that gives a neater description of the algorithm that estimates the parameters of IBM model 1.
 
 The following file contains a number of sentence-aligned parallel texts taken from the European Parliament proceedings (Links to an external site.). The file contains Swedish-English, German-English, and French-English sentence pairs. For instance, the file europarl-v7.sv-en.lc.sv contains the Swedish part of the Swedish-English dataset. The texts have been preprocessed to be more easy to work with: all words are in lowercase, and punctuation has been separated from the words. This means that you can split each sentence into separate words simply by considering the whitespace.
