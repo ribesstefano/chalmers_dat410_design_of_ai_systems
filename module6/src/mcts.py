@@ -92,7 +92,8 @@ class MonteCarloTreeSearchNode:
 
 
 def main():
-    initial_state = game
+    initial_state = TicTacToe()
+    initial_state.reset()
     root = MonteCarloTreeSearchNode(state=initial_state)
     selected_node = root.best_action()
     return
