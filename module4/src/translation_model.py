@@ -1,6 +1,6 @@
 from collections import defaultdict as ddict
 
-def train(eng, fr, prtable=None, verbose=0):
+def train_language_model(eng, fr, prtable=None, verbose=0):
     if prtable is None:
         prtable = ddict(lambda: 1e-6)
     ec_num = ddict(lambda:1e-6)

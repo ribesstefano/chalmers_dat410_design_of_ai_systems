@@ -2,7 +2,6 @@ import numpy as np
 from collections import defaultdict
 from tictactoe import TicTacToeGame
 
-
 class MonteCarloTreeSearch(object):
     def __init__(self, state, parent=None, parent_action=None):
         self.state = state
