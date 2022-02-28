@@ -1,7 +1,7 @@
 from data_cleaner import clean_data
 import os
 import numpy as np
-# from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt
 
 class RuleBasedClassifier(object):
     """Implements a rule-based classifier"""
@@ -29,47 +29,16 @@ class RuleBasedClassifier(object):
         pos = X[y == 1]
         neg = X[y == 0]
 
-        # print(pos['radius_std'].describe().transpose())
-        # print(neg['radius_std'].describe().transpose())
-
-        # print(f"radius_mean pos/neg: {pos['radius_mean'].min()} / {neg['radius_mean'].min()}")
-        # print(f"radius_std pos/neg: {pos['radius_std'].min()} / {neg['radius_std'].min()}")
-        # print(f"radius_worst pos/neg: {pos['radius_worst'].min()} / {neg['radius_worst'].min()}")
-        
-        # print(pos['area_worst'].describe().transpose())
-        # print(neg['area_worst'].describe().transpose())
-        # neg['area_worst'].plot()
-        
-        print(pos['compactness_worst'].describe().transpose())
-        print(neg['compactness_worst'].describe().transpose())
-
-        # T = m / s
-        # rm * 0.1 > T * 0.1 = m / s 
-
+        # plt.hist(pos['symmetry_mean'] / pos['fractal dimension_mean'], label='pos')
+        # plt.hist(neg['symmetry_mean'] / neg['fractal dimension_mean'], label='neg')
+        # plt.legend()
+        # plt.show()
 
         self.abnormal_cell_size_threshold = pos['radius_std'].mean()
-        self.abnormal_cell_texture_threshold = pos['radius_std'].mean()
+        self.abnormal_cell_shape_threshold = pos['smoothness_mean'].mean()
 
-        '''
-        radius
-        texture
-        perimeter
-        area
-        smoothness
-        compactness
-        concavity
-        concave points
-        symmetry
-        fractal dimension
-        '''
-
-
-        '''
-        If [cell size is abnormal]
-        or [cell shape is abnormal]
-        or [cell texture is abnormal]
-        or [cell similarity/homogeneity is abnormal]
-        '''
+        self.abnormal_cell_texture_threshold = pos['concavity_worst'].mean()
+        self.abnormal_cell_similarity_threshold = (neg['symmetry_worst'] / neg['fractal dimension_worst']).mean()
 
     def is_cell_size_abnormal(self, cell):
         if cell['radius_std'] > self.abnormal_cell_size_threshold:
@@ -78,13 +47,23 @@ class RuleBasedClassifier(object):
             return False
 
     def is_cell_shape_abnormal(self, cell):
-        return False
+        if cell['smoothness_mean'] > self.abnormal_cell_shape_threshold:
+            return True
+        else:
+            return False
 
     def is_cell_texture_abnormal(self, cell):
-        return False
+        if cell['concavity_worst'] > self.abnormal_cell_texture_threshold:
+            return True
+        else:
+            return False
 
     def is_cell_similarity_abnormal(self, cell):
-        return False
+        similarity = cell['symmetry_mean'] / cell['fractal dimension_mean']
+        if similarity > self.abnormal_cell_similarity_threshold:
+            return True
+        else:
+            return False
 
     def predict(self, X):
         if not self.trained:
@@ -116,8 +95,6 @@ def main():
 
     model.fit(x_train, y_train)
     print(model.score(x_test, y_test))
-
-    # print(x_train.describe().transpose())
 
 if __name__ == '__main__':
     main()
