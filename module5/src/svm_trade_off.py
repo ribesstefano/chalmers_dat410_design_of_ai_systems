@@ -40,7 +40,7 @@ def compute_auc(y_test, y_scores):
 def get_max_auc(x_train, y_train, x_test, y_test):
     df_scores = pd.DataFrame(data=None, columns=['C', 'Kernel', 'AUC', 'Scaled'], )
     fig, ax = plt.subplots()
-    for c in np.arange(0.01, 5, 0.1):
+    for c in np.arange(0.1, 5.1, 0.1):
         for kernel in kernels:
             for scaled in [False, True]:
                 define_model(c, kernel)
@@ -53,7 +53,11 @@ def get_max_auc(x_train, y_train, x_test, y_test):
                 df_scores = df_scores.append(score_dict, ignore_index=True)
 
                 ax.plot(fpr, tpr)
+    plt.xlabel('False Positive')
+    plt.ylabel('True Positive')
+    fig1 = plt.gcf()
     plt.show()
+    fig1.savefig('trade_off.png')
 
     df_scores = df_scores.sort_values(by=['AUC'], ascending=False)
     return df_scores.iloc[0]
@@ -62,6 +66,7 @@ def get_max_auc(x_train, y_train, x_test, y_test):
 def main():
     x_train, y_train, x_test, y_test = data_cleaner.clean_data('wdbc.pkl', 0.7)
     max_auc = get_max_auc(x_train, y_train, x_test, y_test)
+    print(max_auc)
 
 
 if __name__ == '__main__':
