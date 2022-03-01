@@ -1,5 +1,6 @@
 import itertools
 import numpy as np
+import copy
 
 class TicTacToeGame(object):
     """
@@ -8,6 +9,8 @@ class TicTacToeGame(object):
     def __init__(self, grid_size=3, bot_player_id=1, num_players=2):
         super(TicTacToeGame, self).__init__()
         self.grid_size = grid_size
+        self.num_players = num_players
+        self.bot_player_id = bot_player_id
         self.board = [[0] * self.grid_size] * self.grid_size
         self.board = np.zeros((self.grid_size, self.grid_size))
         coords = [x for x in range(grid_size)]
@@ -16,8 +19,6 @@ class TicTacToeGame(object):
         self.player_turn = 1
         self.num_turns_passed = 0
         self.max_num_turns = grid_size ** 2
-        self.num_players = num_players
-        self.bot_player_id = bot_player_id
         assert 0 < self.bot_player_id <= num_players, f'ERROR. Bot ID {self.bot_player_id} higher than number of players ({self.num_players}).'
     
     def reset(self):
@@ -28,7 +29,7 @@ class TicTacToeGame(object):
         self.num_turns_passed = 0
 
     def get_action_space(self):
-        return self.action_space
+        return self.action_space.copy()
 
     def _check_victory(self):
         # Get the two diagonals
@@ -73,6 +74,12 @@ class TicTacToeGame(object):
         reward += np.apply_along_axis(count_toes, axis=1, arr=self.board).sum()
         return reward
 
+    def is_action_legal(self, action):
+        if action in self.action_space and self.board[action] == 0:
+            return True
+        else:
+            return False
+
     def step(self, action, verbose=0):
         assert action in self.action_space, f'ERROR. Cell {action} outside of the board.'
         assert self.board[action] == 0, f'ERROR. Cell {action} already occupied.'
@@ -104,8 +111,21 @@ class TicTacToeGame(object):
             print('')
         print('-' * 3 * self.grid_size)
 
+    def __copy__(self):
+        new_env = TicTacToeGame(self.grid_size, self.bot_player_id, self.num_players)
+        new_env.board = self.board.copy()
+        new_env.action_space = self.action_space.copy()
+        new_env.observation_space = self.observation_space.copy()
+        new_env.player_turn = self.player_turn
+        new_env.num_turns_passed = self.num_turns_passed
+        new_env.max_num_turns = self.max_num_turns
+        return new_env
+
+    def copy(self):
+        return self.__copy__()
+
 def main():
-    grid_size = 4
+    grid_size = 3
     env = TicTacToeGame(grid_size)
     env.reset()
     coords = [x for x in range(grid_size)]
