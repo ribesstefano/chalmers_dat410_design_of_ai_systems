@@ -12,6 +12,3 @@ class TaskIdentifier(object):
         # Analyze sentence and return a specific task class
         task = WeatherTask()
         return task
-
-    def is_query_satisfied(self, query, sentence):
-        return False, ''

@@ -10,3 +10,7 @@ class Task(ABC):
     @abstractmethod
     def get_queries(self):
         return self.queries
+
+    @abstractmethod
+    def is_query_satisfied(self, query, sentence):
+        return False, ''

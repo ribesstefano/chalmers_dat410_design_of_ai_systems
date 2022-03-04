@@ -7,3 +7,6 @@ class RestaurantTask(Task):
 
     def get_queries(self):
         return self.queries
+
+    def is_query_satisfied(self, query, sentence):
+        return False, ''
