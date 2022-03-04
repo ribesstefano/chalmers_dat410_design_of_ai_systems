@@ -1,5 +1,6 @@
 from tictactoe import TicTacToeGame
 from rule_based_player import RuleBasedPlayer
+from mcts import MonteCarloTreeSearchNode
 
 import itertools
 import random
@@ -52,7 +53,9 @@ def main():
         while not done:
             if (turns + initial_player) % 2 == 0:
                 # Bot turn
-                a = model.get_action(observation)
+                # a = model.get_action(observation)
+                mcts = MonteCarloTreeSearchNode(env.copy())
+                a = mcts.get_best_action(2)
             else:
                 # Our player turn
                 a = random.choice(env.get_action_space())
