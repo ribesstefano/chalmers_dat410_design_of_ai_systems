@@ -47,9 +47,12 @@ class DialogueManager(object):
                     all_queries_satisfied &= satisfied
         # Task solved, forumlate solution/ackowledge
         self._say(task.resolve_queries())
+        self.user_sentences = []
         # Recursively call this function if the user requests another task
-        more_help = 'Is there anything else I can do?'
-        task = self.task_identifier.get_task_from_sentence(more_help)
+        # TODO: Check what happens when the user gives affermative answers but
+        # without any other informative content...
+        user_reply = self._ask_user('Is there anything else I can do?')
+        task = self.task_identifier.get_task_from_sentence(user_reply)
         if task is not None:
             self._interact_with_user(task=task)
         else:
