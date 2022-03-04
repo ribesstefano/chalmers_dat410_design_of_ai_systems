@@ -1,47 +1,78 @@
 from task_identifier import TaskIdentifier
 from task import Task
 
-class DialogManager(object):
-    """docstring for DialogManager"""
-    def __init__(self):
-        super(DialogManager, self).__init__()
+class DialogueManager(object):
+    """docstring for DialogueManager"""
+    def __init__(self, activate=False):
+        super(DialogueManager, self).__init__()
         self.user_sentences = []
         self.task_identifier = TaskIdentifier()
+        self.activated = False
+        if activate:
+            self.activate()
 
-    def formulate_answer(self, input_sentence):
-        self.user_sentences.append(input_sentence)
+    def activate(self):
+        print('=' * 80)
+        print('*** The UBOT Task Assistant is activated ***')
+        print('Ask information about weather, restaurants and trams.')
+        print('=' * 80)
+        self.activated = True
+        self._interact_with_user(self._ask_user('How can I help you?'))
 
-        task = self.task_identifier.get_task_from_sentence(input_sentence)
+    def close(self):
+        # Just to avoid repeating the closing remarks if the user manually
+        # closes the chatbot
+        if self.activated:
+            self._say('Thank you. Bye.')
+        self.activated = False
+
+    def _interact_with_user(self, input_sentence=None, task=None):
+        # TODO: Think about a recursive implementation.
+        # TODO: How do we handle/recognize that a task has been completed?
+        if input_sentence is not None:
+            self.user_sentences.append(input_sentence)
+            task = self.task_identifier.get_task_from_sentence(input_sentence)
+
         all_queries_satisfied = False
-
         while not all_queries_satisfied:
             all_queries_satisfied = True
             for query in task.get_queries():
                 for sentence in self.user_sentences:
-                    satisfied, request = task.is_query_satisfied(query, sentence)
+                    satisfied, reply = task.is_query_satisfied(query, sentence)
                     if not satisfied:
-                        self.sentences.append(self.ask_question(request))
+                        self.sentences.append(self._ask_user(reply))
+                    else:
+                        self._say(reply)
                     # If at least one query isn't satisfied, restart all over
                     all_queries_satisfied &= satisfied
-        return "I'm a bot."
+        # Task solved, forumlate solution/ackowledge
+        self._say(task.resolve_queries())
+        # Recursively call this function if the user requests another task
+        more_help = 'Is there anything else I can do?'
+        task = self.task_identifier.get_task_from_sentence(more_help)
+        if task is not None:
+            self._interact_with_user(task=task)
+        else:
+            self.close()
 
-    def ask_question(self, request):
-        print('[BOT]  ' + request)
-        user_answer = ''
-        self.acknowledge_user(user_answer)
+    def _say(self, sentence):
+        if sentence != '':
+            print('[UBOT] ' + sentence)
+
+    def _ask_user(self, request):
+        self._say(request)
+        user_answer = input('[USER] ')
+        self._acknowledge_user(user_answer)
         return user_answer
 
-    def acknowledge_user(self, user_answer):
+    def _acknowledge_user(self, user_answer):
         reply = "Thank you. I'll take care of that."
-        print('[BOT]  ' + reply)
+        self._say(reply)
 
 def main():
-    dm = DialogManager()
-    user_sentence = "What's the weather like tomorrow?"
-    bot_answer = dm.formulate_answer(user_sentence)
-    print('[USER] ' + user_sentence)
-    print('[BOT]  ' + bot_answer)
-
+    dm = DialogueManager()
+    dm.activate()
+    dm.close()
 
 if __name__ == '__main__':
     main()

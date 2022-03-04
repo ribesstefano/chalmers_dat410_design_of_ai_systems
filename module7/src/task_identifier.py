@@ -11,4 +11,7 @@ class TaskIdentifier(object):
     def get_task_from_sentence(self, sentence):
         # Analyze sentence and return a specific task class
         task = WeatherTask()
+
+        if sentence == 'Is there anything else I can do?':
+            return None
         return task
