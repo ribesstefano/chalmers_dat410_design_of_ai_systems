@@ -9,11 +9,11 @@ class Task(ABC):
         self.queries = []
         self.satisfied_queries = []
 
-    def get_queries(self):
+    def get_queries(self, sentence):
         return self.queries
 
     @abstractmethod
-    def is_query_satisfied(self, query, sentence):
+    def are_queries_satisfied(self):
         """
         Determines if a query is satisfied in the given sentence.
         
@@ -28,7 +28,7 @@ class Task(ABC):
         # TODO: We need a system to keep track which queries have already been
         # satisfied, such that we don't require to recompute heavy calculations
         # (maybe the DialogueManager can take care of that afterall...)
-        return False, ''
+        return False
 
     @abstractmethod
     def resolve_queries(self):
