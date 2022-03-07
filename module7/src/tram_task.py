@@ -1,5 +1,7 @@
 from task import Task
 
+import random
+
 class TramTask(Task):
     """docstring for TramTask"""
     def __init__(self):
@@ -19,33 +21,21 @@ class TramTask(Task):
 
     def _is_location_satisfied(self, sentence):
         if self.queries['location'] is None:
-            stop_found = True
             for stop in self.stops_set:
-                if stop not in sentence:
-                    stop_found = False
-                else:
+                if stop in sentence:
                     self.queries['location'] = stop
-                    break
-            if stop_found:
-                return True, ''
-            else:
-                return False, 'Location not found. Please provide a location.'
+                    return True, ''
+            return False, "I dind't find the location. Please tell me a location."
         else:
             True, ''
 
     def _is_time_satisfied(self, sentence):
         if self.queries['time'] is None:
-            time_found = True
             for time in self.times_set:
-                if time not in sentence:
-                    time_found = False
-                else:
+                if time in sentence:
                     self.queries['time'] = time
-                    break
-            if time_found:
-                return True, ''
-            else:
-                return False, 'Invalid time. Please provide a valid time window.'
+                    return True, ''
+            return False, "I dind't understand when. Please tell me a valid time window."
         else:
             True, ''
 
@@ -60,7 +50,8 @@ class TramTask(Task):
         :returns:   A reply to the user
         :rtype:     str
         """
+        rand_tram_num = random.randint(1, 13)
         destination = self.queries['location']
-        at_time = self.queries[time]
-        reply = f'Tram to {destination} will departure {at_time}'
+        at_time = self.queries['time']
+        reply = f'Tram {rand_tram_num} will departure {at_time} from {destination}.'
         return reply

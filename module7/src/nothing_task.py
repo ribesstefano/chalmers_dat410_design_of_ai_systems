@@ -1,6 +1,5 @@
 from task import Task
 
-
 class NothingTask(Task):
     """docstring for WeatherTask"""
 
