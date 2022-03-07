@@ -11,7 +11,8 @@ class TramTask(Task):
         self.queries = {'location': None, 'time': None}
         self.solve_query = {
             'location': self._is_location_satisfied,
-            'time': self._is_time_satisfied}
+            'time': self._is_time_satisfied
+        }
 
     def is_query_satisfied(self, query, sentence):
         # TODO: This might look like an overkill, since the two methods are
@@ -39,7 +40,7 @@ class TramTask(Task):
         else:
             True, ''
 
-    def get_queries(self, sentence):
+    def get_queries(self):
         return self.queries.keys()
 
     def resolve_queries(self):

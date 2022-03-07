@@ -2,7 +2,6 @@ from task import Task
 from weather_task import WeatherTask
 from restaurant_task import RestaurantTask
 from tram_task import TramTask
-from quit_task import QuitTask
 from nothing_task import NothingTask
 
 import spacy
@@ -20,7 +19,7 @@ class TaskIdentifier(object):
             self._remove_verbs(weather_sample) : WeatherTask(),
             self._remove_verbs(restaurant_sample) : RestaurantTask(),
             self._remove_verbs(tram_sample) : TramTask(),
-            self._remove_verbs(quit_sample) : QuitTask()
+            self._remove_verbs(quit_sample) : None
         }
 
     def _remove_verbs(self, sentence):

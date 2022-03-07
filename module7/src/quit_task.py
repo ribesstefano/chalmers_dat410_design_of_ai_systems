@@ -11,3 +11,6 @@ class QuitTask(Task):
 
     def get_queries(self):
         return self.queries.keys()
+
+    def resolve_queries(self):
+        return ''

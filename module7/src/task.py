@@ -6,12 +6,12 @@ class Task(ABC):
     def __init__(self):
         super(Task, self).__init__()
         # TODO: Using a dictionary instead??
-        self.queries = []
+        self.queries = {}
         self.satisfied_queries = []
 
     @abstractmethod
-    def get_queries(self, sentence):
-        return self.queries
+    def get_queries(self):
+        return self.queries.keys()
 
     @abstractmethod
     def is_query_satisfied(self, query, sentence):
