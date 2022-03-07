@@ -6,47 +6,82 @@ class RestaurantTask(Task):
 
     def __init__(self):
         super(RestaurantTask, self).__init__()
-        self.queries = {'location': None, 'type': None}
-        self.cusine_set = {'italian', 'indian', 'chinese'}
+        self.queries = {'location': None, 'cusine': None, 'time': None}
+        self.cuisine_set = {'italian', 'indian', 'chinese'}
         self.cities_set = {'Gothenburg', 'Malmo', 'Stockholm', 'Linkoping'}
-        self.times_set = {'today', 'tomorrow', 'afternoon', 'morning'}
+        self.times_set = {'lunch', 'dinner'}
+        self.solve_query = {
+            'location': self._is_location_satisfied,
+            'time': self._is_time_satisfied,
+            'cuisine': self.is_cuisine_satisfied}
 
-    def are_queries_satisfied(self):
-        queries = self.queries.values()
+    def _is_location_satisfied(self, sentence):
+        if self.queries['location'] is None:
+            city_found = True
+            for city in self.cities_set:
+                if city not in sentence:
+                    city_found = False
+                else:
+                    self.queries['location'] = city
+                    break
+            if city_found:
+                return True, ''
+            else:
+                return False, 'Location not found. Please provide a location.'
+        else:
+            True, ''
 
-        for value in queries:
-            if value is None:
-                return False
-        return True
+    def _is_time_satisfied(self, sentence):
+        if self.queries['time'] is None:
+            time_found = True
+            for time in self.times_set:
+                if time not in sentence:
+                    time_found = False
+                else:
+                    self.queries['time'] = time
+                    break
+            if time_found:
+                return True, ''
+            else:
+                return False, 'Invalid time. Please provide a valid time window.'
+        else:
+            True, ''
 
-    def get_queries(self, sentence):
-        for city in self.cities_set:
-            if city in sentence:
-                self.queries['location'] = city
-        for cusine in self.cusine_set:
-            if cusine in sentence:
-                print('im here')
-                self.queries['type'] = cusine
+    def is_cuisine_satisfied(self, sentence):
+        if self.queries['cuisine'] is None:
+            cuisine_found = True
+            for cuisine in self.cuisine_set:
+                if cuisine not in sentence:
+                    cuisine_found = False
+                else:
+                    self.queries['cuisine'] = cuisine
+                    break
+            if cuisine_found:
+                return True, ''
+            else:
+                return False, 'Invalid cuisine. Please provide a valid cuisine type.'
+        else:
+            True, ''
+
+    def is_query_satisfied(self, query, sentence):
+        # TODO: This might look like an overkill, since the two methods are
+        # nearly identical in what they do. However, for a more scalable
+        # solution, having them separate might be beneficial.
+        return self.solve_query[query](sentence)
+
+    def get_queries(self):
+        return self.queries.keys()
 
     def resolve_queries(self):
         """
         Given all the satisfied queries, resolve the task and return a reply to
         the user.
-        
+
         :returns:   A reply to the user
         :rtype:     str
         """
-        while not self.are_queries_satisfied():
-            if self.queries.get('location') is None:
-                city = input('Please provide a location ')
-                if city not in self.cities_set:
-                    print('City not present in database')
-                else:
-                    self.queries['location'] = city
-            if self.queries.get('type') is None:
-                cusine = input('Please provide a type of cusine ')
-                if cusine not in self.cusine_set:
-                    print(f'Cusine inserted not valid please choose between :{self.cusine_set}')
-                else:
-                    self.queries['type'] = cusine
-        return ''
+        city = self.queries['location']
+        at_time = self.queries['time']
+        cuisine = self.queries['cuisine']
+        reply = f'Reservation made at {cuisine} restaurant for {at_time} in {city}'
+        return reply
