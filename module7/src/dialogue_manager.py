@@ -56,7 +56,7 @@ class DialogueManager(object):
                         if sentence != input_sentence:
                             self.user_sentences.remove(sentence)
 
-        # Task solved, formulate solution/ackowledge
+        # Task solved, get the solution/ackowledgement
         self._say(task.resolve_queries())
         # Reset sentences from the user
         self.user_sentences = []
