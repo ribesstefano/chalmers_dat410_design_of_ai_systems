@@ -5,7 +5,7 @@ class RestaurantTask(Task):
 
     def __init__(self):
         super(RestaurantTask, self).__init__()
-        self.queries = {'location': None, 'cusine': None, 'time': None}
+        self.queries = {'location': None, 'cuisine': None, 'time': None}
         self.cuisine_set = {'italian', 'indian', 'chinese'}
         self.cities_set = {'gothenburg', 'malmo', 'stockholm', 'linkoping'}
         self.times_set = {'lunch', 'dinner'}
