@@ -4,25 +4,53 @@ class TramTask(Task):
     """docstring for TramTask"""
     def __init__(self):
         super(TramTask, self).__init__()
-        self.times_set = {'now', '5 minutes', '1 hour'}
-        self.queries = {'location': None, 'time': None}
+        self.times_set = {'now', 'in 5 minutes', 'in 1 hour'}
         self.stops_set ={'korsvagen', 'brunnsparken', 'jarntorget'}
+        self.queries = {'location': None, 'time': None}
+        self.solve_query = {
+            'location': self._is_location_satisfied,
+            'time': self._is_time_satisfied}
 
-    def are_queries_satisfied(self):
-        queries = self.queries.values()
+    def is_query_satisfied(self, query, sentence):
+        # TODO: This might look like an overkill, since the two methods are
+        # nearly identical in what they do. However, for a more scalable
+        # solution, having them separate might be beneficial.
+        return self.solve_query[query](sentence)
 
-        for value in queries:
-            if value is None:
-                return False
-        return True
+    def _is_location_satisfied(self, sentence):
+        if self.queries['location'] is None:
+            stop_found = True
+            for stop in self.stops_set:
+                if stop not in sentence:
+                    stop_found = False
+                else:
+                    self.queries['location'] = stop
+                    break
+            if stop_found:
+                return True, ''
+            else:
+                return False, 'Location not found. Please provide a location.'
+        else:
+            True, ''
+
+    def _is_time_satisfied(self, sentence):
+        if self.queries['time'] is None:
+            time_found = True
+            for time in self.times_set:
+                if time not in sentence:
+                    time_found = False
+                else:
+                    self.queries['time'] = time
+                    break
+            if time_found:
+                return True, ''
+            else:
+                return False, 'Invalid time. Please provide a valid time window.'
+        else:
+            True, ''
 
     def get_queries(self, sentence):
-        for stop in self.stops_set:
-            if stop in sentence:
-                self.queries['location'] = stop
-        for time in self.times_set:
-            if time in sentence:
-                self.queries['time'] = time
+        return self.queries.keys()
 
     def resolve_queries(self):
         """
@@ -32,17 +60,7 @@ class TramTask(Task):
         :returns:   A reply to the user
         :rtype:     str
         """
-        while not self.are_queries_satisfied():
-            if self.queries.get('location') is None:
-                stop = input('Please provide a location ')
-                if stop not in self.stops_set:
-                    print('City not present in database')
-                else:
-                    self.queries['location'] = stop
-            if self.queries.get('time') is None:
-                time = input('Please provide a time ')
-                if time not in self.times_set:
-                    print(f'Time not valid:{self.times_set}')
-                else:
-                    self.queries['time'] = time
-        return ''
+        destination = self.queries['location']
+        at_time = self.queries[time]
+        reply = f'Tram to {destination} will departure {at_time}'
+        return reply
