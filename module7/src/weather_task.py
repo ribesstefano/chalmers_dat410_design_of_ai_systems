@@ -1,4 +1,5 @@
 from task import Task
+import random
 
 
 class WeatherTask(Task):
@@ -6,29 +7,54 @@ class WeatherTask(Task):
 
     def __init__(self):
         super(WeatherTask, self).__init__()
-        self.queries = {'time': None,
-                        'location': None}
-        self.cities_set = {'Gothenburg', 'Malmo', 'Stockholm', 'Linkoping'}
-        self.times_set = {'today', 'tomorrow', 'afternoon', 'morning'}
+        self.times_set = {'today', 'tomorrow', 'in 2 days'}
+        self.stops_set = {'gothenburg', 'malmo', 'stockholm'}
+        self.queries = {'location': None, 'time': None}
+        self.solve_query = {
+            'location': self._is_location_satisfied,
+            'time': self._is_time_satisfied}
+        self.forcast = ['cloudy', 'sunny', 'rainy', 'snowy']
 
-    def are_queries_satisfied(self):
-        queries = self.queries.values()
+    def _is_location_satisfied(self, sentence):
+        if self.queries['location'] is None:
+            stop_found = True
+            for stop in self.stops_set:
+                if stop not in sentence:
+                    stop_found = False
+                else:
+                    self.queries['location'] = stop
+                    break
+            if stop_found:
+                return True, ''
+            else:
+                return False, 'Location not found. Please provide a location.'
+        else:
+            True, ''
 
-        for value in queries:
-            if value is None:
-                print(value)
-                return False
+    def _is_time_satisfied(self, sentence):
+        if self.queries['time'] is None:
+            time_found = True
+            for time in self.times_set:
+                if time not in sentence:
+                    time_found = False
+                else:
+                    self.queries['time'] = time
+                    break
+            if time_found:
+                return True, ''
+            else:
+                return False, 'Invalid time. Please provide a valid time window.'
+        else:
+            True, ''
 
-        return True
+    def is_query_satisfied(self, query, sentence):
+        # TODO: This might look like an overkill, since the two methods are
+        # nearly identical in what they do. However, for a more scalable
+        # solution, having them separate might be beneficial.
+        return self.solve_query[query](sentence)
 
-    def get_queries(self, sentence):
-        for time in self.times_set:
-            if time in sentence:
-                self.queries['time'] = time
-
-        for city in self.cities_set:
-            if city in sentence:
-                self.queries['location'] = city
+    def get_queries(self):
+        return self.queries.keys()
 
     def resolve_queries(self):
         """
@@ -38,19 +64,8 @@ class WeatherTask(Task):
         :returns:   A reply to the user
         :rtype:     str
         """
-
-        while not self.are_queries_satisfied():
-            if self.queries.get('location') is None:
-                city = input('Please provide a location')
-                if city not in self.cities_set:
-                    print('City not present in database')
-                else:
-                    self.queries['location'] = city
-            if self.queries.get('time') is None:
-                time = input('Please provide a time')
-                if time not in self.times_set:
-                    print(f'Time inserted not valid please choose between :{self.times_set}')
-                else:
-                    self.queries['time'] = time
-
-        return ''
+        city = self.queries['location']
+        at_time = self.queries['time']
+        forcast = random.choice(self.forcast)
+        reply = f'{at_time} the weather in {city} is {forcast}'
+        return reply
