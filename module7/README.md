@@ -2,6 +2,22 @@
 
 The purpose of this task is to make you aware of the basic steps and challenges involved in designing a digital assistant.
 
+## Quick-Start Guide
+
+In oder to run our system, one needs to istall _Spacy_ and its dependencies:
+
+```bash
+(env) >>> pip install -U spacy
+(env) >>> python -m spacy download en_core_web_lg
+```
+
+Once Spacy has been installed, please run:
+
+```bash
+(env) >>> cd src/
+(env) >>> python dialogue_manager.py
+```
+
 ## Implementation
 
 Implement a simple text-based digital assistant that can help with at least three things, for example:
@@ -22,7 +38,7 @@ As the output of this task, briefly describe how you have implemented the system
 
 Suggest how - if more time were available - you could make your dialogue system more advanced.
 
-## Implementation Details
+<!-- ## Implementation Details
 
 The main system is managed by the `DialogueManager` class, which is responsible for prompting bot's questions and handle user's replies.
 
@@ -57,4 +73,4 @@ class DM:
 class task:
 	- NLU agent/method
 	- with a list of queries
-```
+``` -->
