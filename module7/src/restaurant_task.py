@@ -1,6 +1,5 @@
 from task import Task
 
-
 class RestaurantTask(Task):
     """docstring for RestaurantTask"""
 
@@ -13,53 +12,36 @@ class RestaurantTask(Task):
         self.solve_query = {
             'location': self._is_location_satisfied,
             'time': self._is_time_satisfied,
-            'cuisine': self.is_cuisine_satisfied}
+            'cuisine': self.is_cuisine_satisfied
+        }
 
     def _is_location_satisfied(self, sentence):
         if self.queries['location'] is None:
-            city_found = True
             for city in self.cities_set:
-                if city not in sentence:
-                    city_found = False
-                else:
+                if city in sentence:
                     self.queries['location'] = city
-                    break
-            if city_found:
-                return True, ''
-            else:
-                return False, 'Location not found. Please provide a location.'
+                    return True, ''
+            return False, "I dind't find the location. Please tell me a location."
         else:
             True, ''
 
     def _is_time_satisfied(self, sentence):
         if self.queries['time'] is None:
-            time_found = True
             for time in self.times_set:
-                if time not in sentence:
-                    time_found = False
-                else:
+                if time in sentence:
                     self.queries['time'] = time
-                    break
-            if time_found:
-                return True, ''
-            else:
-                return False, 'Invalid time. Please provide a valid time window.'
+                    return True, ''
+            return False, "I dind't understand when. Please tell me a valid time window."
         else:
             True, ''
 
     def is_cuisine_satisfied(self, sentence):
         if self.queries['cuisine'] is None:
-            cuisine_found = True
             for cuisine in self.cuisine_set:
-                if cuisine not in sentence:
-                    cuisine_found = False
-                else:
+                if cuisine in sentence:
                     self.queries['cuisine'] = cuisine
-                    break
-            if cuisine_found:
-                return True, ''
-            else:
-                return False, 'Invalid cuisine. Please provide a valid cuisine type.'
+                    return True, ''
+            return False, 'I cannot find this cuisine. Please tell me a cuisine that I know.'
         else:
             True, ''
 

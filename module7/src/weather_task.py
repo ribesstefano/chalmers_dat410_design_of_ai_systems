@@ -1,10 +1,9 @@
 from task import Task
-import random
 
+import random
 
 class WeatherTask(Task):
     """docstring for WeatherTask"""
-
     def __init__(self):
         super(WeatherTask, self).__init__()
         self.times_set = {'today', 'tomorrow', 'in 2 days'}
@@ -12,38 +11,27 @@ class WeatherTask(Task):
         self.queries = {'location': None, 'time': None}
         self.solve_query = {
             'location': self._is_location_satisfied,
-            'time': self._is_time_satisfied}
+            'time': self._is_time_satisfied
+        }
         self.forcast = ['cloudy', 'sunny', 'rainy', 'snowy']
 
     def _is_location_satisfied(self, sentence):
         if self.queries['location'] is None:
-            stop_found = True
             for stop in self.stops_set:
-                if stop not in sentence:
-                    stop_found = False
-                else:
+                if stop in sentence:
                     self.queries['location'] = stop
-                    break
-            if stop_found:
-                return True, ''
-            else:
-                return False, 'Location not found. Please provide a location.'
+                    return True, ''
+            return False, "I dind't find the location. Please tell me a location."
         else:
             True, ''
 
     def _is_time_satisfied(self, sentence):
         if self.queries['time'] is None:
-            time_found = True
             for time in self.times_set:
-                if time not in sentence:
-                    time_found = False
-                else:
+                if time in sentence:
                     self.queries['time'] = time
-                    break
-            if time_found:
-                return True, ''
-            else:
-                return False, 'Invalid time. Please provide a valid time window.'
+                    return True, ''
+            return False, "I dind't understand when. Please tell me a valid time window."
         else:
             True, ''
 
