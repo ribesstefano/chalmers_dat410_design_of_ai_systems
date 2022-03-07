@@ -9,11 +9,12 @@ class Task(ABC):
         self.queries = []
         self.satisfied_queries = []
 
+    @abstractmethod
     def get_queries(self, sentence):
         return self.queries
 
     @abstractmethod
-    def are_queries_satisfied(self):
+    def is_query_satisfied(self, query, sentence):
         """
         Determines if a query is satisfied in the given sentence.
         
