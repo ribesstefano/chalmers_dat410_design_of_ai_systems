@@ -8,10 +8,10 @@ class NothingTask(Task):
         self.queries = {'nothing': None}
 
     def is_query_satisfied(self, query, sentence):
-        return True, 'I don\'t understand, please repeat'
+        return True, ''
 
     def get_queries(self):
         return self.queries.keys()
 
     def resolve_queries(self):
-        return 'I don\'t understand, please repeat'
+        return 'I\'m not sure I understand your question...'
