@@ -4,7 +4,6 @@ import re
 
 import numpy as np
 
-
 from transform import Transform, Identity, Rotate90, Flip
 
 TRANSFORMATIONS = [Identity(), Rotate90(1), Rotate90(2), Rotate90(3),
@@ -52,10 +51,13 @@ def play_games(total_games, x_strategy, o_strategy, play_single_game=play_game):
         DRAW: 0
     }
 
+    results_array = []
+
     for g in range(total_games):
         end_of_game = (play_single_game(x_strategy, o_strategy))
         result = end_of_game.get_result()
         results[result] += 1
+        results_array.append(result)
 
     x_wins_percent = results[X_WINS] / total_games * 100
     o_wins_percent = results[O_WINS] / total_games * 100
@@ -65,18 +67,21 @@ def play_games(total_games, x_strategy, o_strategy, play_single_game=play_game):
     print(f"O wins: {o_wins_percent:.2f}%")
     print(f"draw  : {draw_percent:.2f}%")
 
+    return results_array
+
 
 def play_random_move(board):
     """Strategy to play random moves"""
     move = board.get_random_legal_move_index()
     return board.move(move)
 
+
 def play_human_move(board):
     """Strategy that requires human input"""
     print('Type move coordinates as (n,m): ')
     line = input()
     print(type(line))
-    line = re.sub("[()]","", line)
+    line = re.sub("[()]", "", line)
     bits = line.split(',')  # split
     bits = [int(bit) for bit in bits]
     move = np.ravel_multi_index(bits, BOARD_DIMENSIONS)
@@ -95,17 +100,18 @@ def is_empty(values):
 
 class Board:
     """Class to implement the board of game tic-tac-toe"""
+
     def __init__(self, board=None, illegal_move=None):
         if board is None:
-            #if game started the board is initialized as empty board
+            # if game started the board is initialized as empty board
             self.board = np.copy(new_board)
         else:
             self.board = board
 
-        #for every board there are a set of illegal moves
+        # for every board there are a set of illegal moves
         self.illegal_move = illegal_move
 
-        #matrix version of board to simplify later controls
+        # matrix version of board to simplify later controls
         self.board_2d = self.board.reshape(BOARD_DIMENSIONS)
 
     def get_result(self):
@@ -194,6 +200,7 @@ class Board:
 
 class BoardCache:
     """class to cache boards"""
+
     def __init__(self):
         self.cache = {}
 
