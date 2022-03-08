@@ -28,6 +28,9 @@ def run_random_forest_model(dataset):
     y_scores = clf.predict_proba(x_test)
     auc = roc_auc_score(y_test, y_scores[:, 1])
     fpr, tpr, threshold = roc_curve(y_test, y_scores[:, 1])
+    print('-' * 80)
+    print(f'INFO. Feature ranking:\n{get_feature_importance(clf, x_train)}')
+    print('-' * 80)
     return auc, fpr, tpr
 
 def run_knn_model(dataset):
