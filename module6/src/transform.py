@@ -1,9 +1,7 @@
 import numpy as np
 
-
 def reverse(operations):
     return operations[::-1]
-
 
 class Transform:
     """class to perform transformations on matrix"""
@@ -19,7 +17,6 @@ class Transform:
         for op in reverse(self.operations):
             target = op.reverse(target)
         return target
-
 
 class Identity:
     @staticmethod
