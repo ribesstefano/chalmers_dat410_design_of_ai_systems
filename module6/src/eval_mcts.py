@@ -58,38 +58,45 @@ def play_games(total_games, x_strategy, o_strategy):
     return results_array
 
 def main():
-        board_size = 3
-        n_games = 200
-        num_playouts = 1000
+    board_size = 4
+    num_games = 200
+    num_playouts = 1000
 
-        mcts = MCTS(board_size)
-        print(f'Training MCTS with board size of {board_size}x{board_size}...')
-        mcts.train(num_playouts=num_playouts)
-        print('Training done. Starting evaluation. Playing {n_games}')
-        results = play_games(n_games, play_random_move, mcts.play)
+    mcts = MCTS(board_size)
+    print(f'Training MCTS with board size of {board_size}x{board_size}...')
+    mcts.train(num_playouts=num_playouts)
+    print(f'Training done. Starting evaluation. Playing {num_games} games.')
+
+    plt.subplot()
+
+    bot_pos = ['Bot plays 2nd', 'Bot plays 1st']
+    strategies = [play_random_move, mcts.play]
+    for i, (x, o) in enumerate(zip(strategies, reversed(strategies))):
+        print(bot_pos[i])
+        results = play_games(num_games, play_random_move, mcts.play)
 
         lost_percentages = []
         win_percentages = []
         draw_percentages = []
 
-        for i in range(len(results)):
-            draw_percentages.append(calc_percentage(results[0:i + 1], 0))
-            win_percentages.append(calc_percentage(results[0:i + 1], -1))
-            lost_percentages.append(calc_percentage(results[0:i + 1], 1))
+        for j in range(len(results)):
+            draw_percentages.append(calc_percentage(results[0:j + 1], 0))
+            win_percentages.append(calc_percentage(results[0:j + 1], -1))
+            lost_percentages.append(calc_percentage(results[0:j + 1], 1))
 
-        plt.subplot()
-        plt.plot(range(n_games), draw_percentages, color='orange', label='Draws')
-        plt.plot(range(n_games), win_percentages, color='green', label='Wins')
-        plt.plot(range(n_games), lost_percentages, color='red', label='Losses')
-        plt.title(f'Draws/Wins/Losses Ratios for MCTS vs. Random Player')
-        plt.xlabel(f'Number of games ({num_playouts} playouts per game)')
-        plt.ylabel('Percentage Ratio')
-        plt.legend()
-        plt.grid(axis='y')
-        plt.savefig(f'percentages_{board_size}x{board_size}.pdf')
+        line = '-' if i == 0 else ':'
+        shade = '' if i == 0 else 'dark'
+        plt.plot(range(num_games), draw_percentages, line, color=f'{shade}orange', label=f'Draws ({bot_pos[i]})')
+        plt.plot(range(num_games), win_percentages, line, color=f'{shade}green', label=f'Wins ({bot_pos[i]})')
+        plt.plot(range(num_games), lost_percentages, line, color=f'{shade}red', label=f'Losses ({bot_pos[i]})')
+    plt.title(f'Draws/Wins/Losses Ratios for MCTS vs. Random Player')
+    plt.xlabel(f'Number of games {num_games}')
+    plt.ylabel('Percentage Ratio')
+    plt.legend()
+    plt.grid(axis='y')
+    plt.savefig(f'percentages_{board_size}x{board_size}.pdf')
+    plt.close()
         # plt.show()
-
-        print('GAME OVER')
 
 
 if __name__ == '__main__':
