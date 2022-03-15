@@ -1,5 +1,6 @@
 scipy
 matplotlib
 tensorflow
-keras
 pydub
+pyyaml
+h5py

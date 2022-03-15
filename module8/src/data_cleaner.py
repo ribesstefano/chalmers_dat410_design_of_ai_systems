@@ -51,7 +51,9 @@ def load_dataset(filename, reshape=False):
     :returns:   x_train, y_train, x_test, y_test
     :rtype:     Tuple of Numpy arrays
     """
-    dataset = np.load(filename, allow_pickle=True).item()
+    dataset = np.load(filename, allow_pickle=True)
+    if filename.endswith('npy'):
+        dataset = dataset.item()
     frame_rate = dataset['frame_rate']
     x_train, y_train = dataset['x_train'], dataset['y_train']
     x_test, y_test = dataset['x_test'], dataset['y_test']
@@ -147,7 +149,10 @@ def main():
         'x_test' : x_test,
         'y_test' : y_test,
     }
-    np.save(os.path.join(data_dir, f'{fr}.npy'), dataset)
+    # np.save(os.path.join(data_dir, f'{fr}.npy'), dataset)
+    np.savez_compressed(os.path.join(data_dir, f'{fr}.npz'),
+        frame_rate=frame_rate, x_train=x_train, y_train=y_train,
+        x_test=x_test, y_test=y_test)
     # ==========================================================================
     # Load dataset (Testing)
     # ==========================================================================
