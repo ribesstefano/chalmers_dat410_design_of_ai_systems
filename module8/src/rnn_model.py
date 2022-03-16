@@ -10,7 +10,8 @@ def load_model(model_filename):
 
 
 def train_model(dataset_filename, model_filename=None, epochs=10):
-    x_train, y_train, x_test, y_test = load_dataset(dataset_filename)
+    reshape = False
+    x_train, y_train, x_test, y_test = load_dataset(dataset_filename, reshape)
     # model = LinearModel(units=y_test.shape[-1])
     # model.compile(optimizer='adam', loss='mse')
     # model.fit(x_train, y_train, epochs=epochs)
@@ -32,4 +33,4 @@ def train_model(dataset_filename, model_filename=None, epochs=10):
     model.summary()
     if model_filename is not None:
         model.save(model_filename)
-    return model
+    return model, x_test, y_test, reshape
