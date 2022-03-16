@@ -13,7 +13,7 @@ from pydub import AudioSegment
 from tensorflow.keras.experimental import LinearModel
 import itertools
 
-def signaltonoise(a, axis=0, ddof=0, ret_db=False):
+def signaltonoise(a, axis=0, ddof=0, ret_db=False, sd=None):
     """
     The signal-to-noise ratio of the input data.
     Returns the signal-to-noise ratio of `a`, here defined as the mean
@@ -35,7 +35,8 @@ def signaltonoise(a, axis=0, ddof=0, ret_db=False):
     """
     a = np.asanyarray(a)
     m = a.mean(axis)
-    sd = a.std(axis=axis, ddof=ddof)
+    if sd is None:
+        sd = a.std(axis=axis, ddof=ddof)
     snr = np.where(sd == 0, 0, m / sd)
     if ret_db:
         return 20 * np.log10(np.abs(snr))
@@ -64,10 +65,10 @@ def mse(a, b):
     y = np.reshape(b, (batch_size, -1))
     return (np.linalg.norm(x - y, axis=1)**2).mean()
 
-def eval_time(model, x_test, test_runs=10):
+def eval_time(model, x_test, test_runs=10, design_name=''):
     t = timeit.timeit(lambda: model.predict(x_test), number=test_runs)
     t = t / test_runs
-    print(f'INFO. Average execution time for {test_runs} runs: {t:.3f} s')
+    print(f'INFO. [{design_name}] Average execution time for {test_runs} runs: {t:.3f} s')
     return t
 
 def eval_model(model, x_test, y_test, input_transposed=True, test_runs=10, plot_name=None):
@@ -75,30 +76,44 @@ def eval_model(model, x_test, y_test, input_transposed=True, test_runs=10, plot_
 
     if len(y_test.shape) > 2:
         if input_transposed:
-            y_p = y_pred.transpose(0, 2, 1)
+            x = x_test.transpose(0, 2, 1)
             y = y_test.transpose(0, 2, 1)
+            y_p = y_pred.transpose(0, 2, 1)
         else:
-            y_p = y_pred
+            x = x_test
             y = y_test
-        y_shape = (-1, *y_p[0].flatten().shape)
-        y_p = np.reshape(y_p, y_shape)
-        y = np.reshape(y, y_shape)
+            y_p = y_pred
+        flatten_shape = (-1, *y_p[0].flatten().shape)
+        x = np.reshape(x, flatten_shape)
+        y = np.reshape(y, flatten_shape)
+        y_p = np.reshape(y_p, flatten_shape)
     else:
-        y_p = y_pred
+        x = x_test
         y = y_test
-        y_shape = y_p[0].flatten().shape
+        y_p = y_pred
 
     e = mse(y, y_p)
-    y_snr = signaltonoise(y, axis=1, ret_db=True).mean()
-    y_p_snr = signaltonoise(y_p, axis=1, ret_db=True).mean()
+
+    noise_power = ((x - y)**2).mean(axis=1)
+    noise_std = (x - y).std(axis=1)
+    x_power = (x**2).mean(axis=1)
+    y_power = (y**2).mean(axis=1)
+    y_p_power = (y_p**2).mean(axis=1)
+
+    # NOTE: For y, the noise has expected value of 0, therefore we use the noise std instead
+    y_snr = (y_power / noise_std).mean() # signaltonoise(y, axis=1, ret_db=True, sd=noise_sd).mean()
+    x_snr = (x_power / noise_power).mean() # signaltonoise(x, axis=1, ret_db=True, sd=noise_sd).mean()
+    y_p_snr = (y_p_power / noise_power).mean() # signaltonoise(y_p, axis=1, ret_db=True, sd=noise_sd).mean()
 
     print(f'INFO. [{plot_name}] avg. MSE: {e:.1f}')
-    print(f'INFO. [{plot_name}] avg. SNR(y): {y_snr:.2f} dB')
-    print(f'INFO. [{plot_name}] avg. SNR(y_pred): {y_p_snr:.2f} dB')
-    eval_time(model, x_test, test_runs)
+    print(f'INFO. [{plot_name}] avg. SNR_dB(x): {x_snr:.2f}')
+    print(f'INFO. [{plot_name}] avg. SNR_dB(y): {y_snr:.2f}')
+    print(f'INFO. [{plot_name}] avg. SNR_dB(y_pred): {y_p_snr:.2f}')
+    # eval_time(model, x_test, test_runs, plot_name)
 
     plt.plot(y[0].flatten(), label='Clean Audio', color='blue')
     plt.plot(y_p[0].flatten(), label='Predicted Audio', color='darkorange', alpha=0.7)
+    plt.plot(x[0].flatten(), label='Noise Audio', color='green', alpha=0.6)
     plt.xlabel('Time')
     plt.ylabel('Amplitude')
     plt.title(os.path.basename(plot_name).rsplit('.', 1)[0])
@@ -112,16 +127,17 @@ def eval_model(model, x_test, y_test, input_transposed=True, test_runs=10, plot_
 
 
 def plot_history(history, filename):
-    plt.plot(history.history['mse'])
-    plt.plot(history.history['val_mse'])
-    plt.title('Model MSE')
-    plt.ylabel('MSE')
-    plt.xlabel('Epochs')
-    plt.legend(['Train loss', 'Validation loss'], loc='lower left')
-    plt.title(os.path.basename(filename).rsplit('.', 1)[0])
-    plt.grid()
-    plt.savefig(filename)
-    plt.clf()
+    if history is not None:
+        plt.plot(history.history['mse'])
+        plt.plot(history.history['val_mse'])
+        plt.title('Model MSE')
+        plt.ylabel('MSE')
+        plt.xlabel('Epochs')
+        plt.legend(['Train loss', 'Validation loss'], loc='lower left')
+        plt.title(os.path.basename(filename).rsplit('.', 1)[0])
+        plt.grid()
+        plt.savefig(filename)
+        plt.clf()
 
 def main():
     data_dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'data'))
